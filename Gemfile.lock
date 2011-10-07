@@ -1,0 +1,17 @@
+GIT
+  remote: git://github.com/jorgenpt/jenkins-plugin-runtime.git
+  revision: 7efab2d71e790420e240d1241c9b43892ae8601a
+  specs:
+    jenkins-plugin-runtime (0.1.8)
+      json
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    json (1.6.1-java)
+
+PLATFORMS
+  java
+
+DEPENDENCIES
+  jenkins-plugin-runtime!
