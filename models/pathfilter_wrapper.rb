@@ -1,38 +1,58 @@
 class PathfilterWrapper < Jenkins::Tasks::BuildWrapper
   display_name "Pathfilter"
 
-  attr_accessor :include_paths
-  attr_accessor :exclude_paths
+  attr_accessor :ignored_paths
 
   def initialize(attrs)
-    p attrs
-    @include_paths = attrs['include_paths']
-    @exclude_paths = attrs['exclude_paths']
+    @ignored_paths = attrs['ignored_paths']
   end
 
-  # Called some time before the build is to start.
+  # Here we test if any of the changes affect non-ignored files
   def setup(build, launcher, listener, env)
-    listener.info "build will start: #{@include_paths.inspect} #{@exclude_paths.inspect}"
-    build.native.setResult(Java.hudson.model.Result::NOT_BUILT)
+    ignored_paths = @ignored_paths.split(',')
+    listener.info "Ignoring paths: #{ignored_paths.inspect}"
 
-    changeset = build.native.getChangeSet()
-    listener.info "Changeset: #{changeset}"
     begin
-      changeset.each {|change|
-        listener.info " Change: #{change}"
-        files = change.getAffectedFiles()
-        listener.info "  Affected: #{files}"
-      }
+      changeset = build.native.getChangeSet()
+      # XXX: Can there be files in the changeset if it's manually triggered?
+      # If so, how do we check for manual trigger?
+      if changeset.isEmptySet()
+        listener.info "Empty changeset, running build."
+        return
+      end
+
+      changeset.each do |change|
+        change.getAffectedPaths().each do |path|
+
+          # For each path we see if at least one ignore matches, and ignore this
+          # file if that's the case.
+          should_ignore = false
+          ignored_paths.each do |ignore|
+            if File.fnmatch(ignore, path)
+              should_ignore = true
+              break
+            end
+          end
+
+          # If file isn't ignored, we keep on truckin', i.e. run the build.
+          if not should_ignore
+            listener.info "Found non-ignored file change, running build."
+            return
+          end
+        end
+      end
     rescue
+      listener.error "Encountered exception when scanning for ignored paths: #{$!}"
     end
 
-    build.halt("Stopping you")
+    # We only get here if no unignored file was touched, so skip build.
+    listener.info "All files ignored, skipping build."
+    build.native.setResult(Java.hudson.model.Result::NOT_BUILT)
+    build.halt("Build not needed.")
   end
 
-  # Called some time when the build is finished.
+  # We need to return true here, or the builds will fail.
   def teardown(build, listener, env)
-    listener.info "build finished"
-
     true
   end
 end

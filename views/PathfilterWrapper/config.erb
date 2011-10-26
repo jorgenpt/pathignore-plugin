@@ -1,14 +1,8 @@
 <%
 f = taglib("/lib/form")
 f.block do
-  f.entry(:title => 'Include paths',
-          :field => 'include_paths',
-          :description => 'Comma-separated, zsh-style globs') do
-    f.textbox
-  end
-
-  f.entry(:title => 'Exclude paths',
-          :field => 'exclude_paths',
+  f.entry(:title => 'Ignored paths',
+          :field => 'ignored_paths',
           :description => 'Comma-separated, zsh-style globs') do
     f.textbox
   end
