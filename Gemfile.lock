@@ -1,11 +1,3 @@
-GIT
-  remote: git://github.com/jorgenpt/jenkins-plugin-runtime.git
-  revision: 4d44d4875006ef38400c4df78b7aaeb5ae1a9aec
-  branch: bump-version
-  specs:
-    jenkins-plugin-runtime (0.1.9)
-      json
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -15,6 +7,8 @@ GEM
       jenkins-war (>= 1.427)
       rubyzip
       thor
+    jenkins-plugin-runtime (0.1.10)
+      json
     jenkins-war (1.434)
     json (1.6.1-java)
     rubyzip (0.9.4)
@@ -25,4 +19,4 @@ PLATFORMS
 
 DEPENDENCIES
   jenkins-plugin (~> 0.1.13)
-  jenkins-plugin-runtime!
+  jenkins-plugin-runtime (~> 0.1.9)

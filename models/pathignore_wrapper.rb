@@ -50,9 +50,4 @@ class PathignoreWrapper < Jenkins::Tasks::BuildWrapper
     build.native.setResult(Java.hudson.model.Result::NOT_BUILT)
     build.halt("Build not needed.")
   end
-
-  # We need to return true here, or the builds will fail.
-  def teardown(build, listener, env)
-    true
-  end
 end
