@@ -9,7 +9,7 @@ class PathfilterWrapper < Jenkins::Tasks::BuildWrapper
 
   # Here we test if any of the changes affect non-ignored files
   def setup(build, launcher, listener, env)
-    ignored_paths = @ignored_paths.split(',')
+    ignored_paths = @ignored_paths.split(',').collect { |p| p.strip }
     listener.info "Ignoring paths: #{ignored_paths.inspect}"
 
     begin
