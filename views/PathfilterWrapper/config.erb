@@ -1,6 +1,16 @@
-<% f = taglib("/lib/form") %>
-<% f.entry do %>
-  <p>
-  There's no configuration at this moment! Now: <%= Time.now.to_s %>
-  </p>
-<% end %>
+<%
+f = taglib("/lib/form")
+f.block do
+  f.entry(:title => 'Include paths',
+          :field => 'include_paths',
+          :description => 'Comma-separated, zsh-style globs') do
+    f.textbox
+  end
+
+  f.entry(:title => 'Exclude paths',
+          :field => 'exclude_paths',
+          :description => 'Comma-separated, zsh-style globs') do
+    f.textbox
+  end
+end
+%>
