@@ -3,7 +3,7 @@ f = taglib("/lib/form")
 f.block do
   f.entry(:title => 'Ignored paths',
           :field => 'ignored_paths',
-          :description => 'Comma-separated, zsh-style globs') do
+          :description => 'Comma-separated, extended globs. See <a href="http://www.ruby-doc.org/core/File.html#method-c-fnmatch">File.fnmatch</a> for details.') do
     f.textbox
   end
 end

@@ -1,5 +1,5 @@
 class PathignoreWrapper < Jenkins::Tasks::BuildWrapper
-  display_name "Ignore certain paths from SCM changes"
+  display_name "Do not build if only specified paths have changed"
 
   attr_accessor :ignored_paths
 
