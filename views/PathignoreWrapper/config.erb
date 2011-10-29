@@ -1,6 +1,11 @@
 <%
 f = taglib("/lib/form")
 f.block do
+  f.entry(:title => 'Invert ignore?',
+          :field => 'invert_ignore',
+          :description => 'If you enable this, we will only build if there is a change to the ignored paths.') do
+          f.checkbox
+  end
   f.entry(:title => 'Ignored paths',
           :field => 'ignored_paths',
           :description => 'Comma-separated, extended globs. See <a href="http://www.ruby-doc.org/core/File.html#method-c-fnmatch">File.fnmatch</a> for details.') do
