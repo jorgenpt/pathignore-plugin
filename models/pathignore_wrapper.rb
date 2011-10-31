@@ -11,10 +11,11 @@ class PathignoreWrapper < Jenkins::Tasks::BuildWrapper
 
   # Here we test if any of the changes warrant a build
   def setup(build, launcher, listener, env)
-    ignored_paths = @ignored_paths.split(',').collect { |p| p.strip }
+    patterns = @ignored_paths.split(',').collect { |p| p.strip }
     verb = if invert_ignore then "Including" else "Ignoring" end
-    noun = if invert_ignore then "included"  else "non-ignored" end
-    listener.info "#{verb} paths: #{ignored_paths.inspect}"
+    listener.info "#{verb} paths matching patterns: #{patterns.inspect}"
+
+    paths = []
 
     begin
       changeset = build.native.getChangeSet()
@@ -27,34 +28,37 @@ class PathignoreWrapper < Jenkins::Tasks::BuildWrapper
 
       changeset.each do |change|
         change.getAffectedPaths().each do |path|
+          paths << path
 
           # For each path we see if at least one ignore matches, and ignore this
           # file if that's the case.
-          should_ignore = false
-          ignored_paths.each do |ignore|
-            if File.fnmatch(ignore, path)
-              should_ignore = true
+          pattern_matched = false
+          patterns.each do |pattern|
+            if File.fnmatch(pattern, path)
+              pattern_matched = true
               break
             end
           end
 
           # If file isn't ignored, we keep on truckin', i.e. run the build.
-          if not should_ignore or invert_ignore
-            listener.info "Found #{noun} file change, running build."
+          if not invert_ignore and not pattern_matched
+            listener.info "File #{path} passed filter, running build."
+            return
+          elsif invert_ignore and pattern_matched
+            listener.info "File #{path} passed filter, running build."
             return
           end
         end
       end
     rescue
-      listener.error "Encountered exception when scanning for ignored paths: #{$!}"
+      listener.error "Encountered exception when scanning for filtered paths: #{$!}"
+      listener.error "Allowing build by default."
+      return
     end
 
     # We only get here if no unignored or included file was touched, so skip build.
-    if invert_ignore
-      listener.info "All files ignored, skipping build."
-    else
-      listener.info "No files included, skipping build."
-    end
+    listener.info "No paths passed filter, skipping build."
+    listener.info "Changed paths: #{paths.inspect}"
 
     build.native.setResult(Java.hudson.model.Result::NOT_BUILT)
     build.halt("Build not needed.")
