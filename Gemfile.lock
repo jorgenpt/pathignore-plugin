@@ -7,7 +7,7 @@ GEM
       jenkins-war (>= 1.427)
       rubyzip
       thor
-    jenkins-plugin-runtime (0.1.10)
+    jenkins-plugin-runtime (0.1.11)
       json
     jenkins-war (1.434)
     json (1.6.1-java)
