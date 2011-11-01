@@ -1,2 +1,5 @@
-/.rvmrc
 /work/
+/pkg/
+/.rvmrc
+/jenkins.war
+/Gemfile.lock
